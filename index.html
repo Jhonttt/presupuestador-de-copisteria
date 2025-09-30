@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <title>Presupuestador de Copistería — UD2</title>
+  <link rel="stylesheet" type="text/css" href="css/styles.css">
+  
+</head>
+<body>
+ <!-- Encabezado institucional -->
+  <header class="app-header">
+    <div class="brand">
+      <div class="overline">IES Lázaro Cárdenas · Curso 2025/26</div>
+      <h1>Desarrollo Web en Entorno Cliente (DWEC)</h1>
+      <div class="sub">
+        <span class="pill">Ciclo formativo: CFGS Desarrollo de Aplicaciones Web (DAW)</span>
+        <span class="pill">Unidad Didáctica 2 · Proyecto ABP</span>
+        <span class="pill">Herramientas: <strong>JS (navegador)</strong>, <code>prompt</code>, <code>alert</code>, consola</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- Enunciado -->
+    <section class="card">
+      <h2>Enunciado (resumen)</h2>
+      <p>
+        Calcula el presupuesto de un encargo según: páginas B/N y Color, tamaño (A4/A3), doble cara, encuadernaciones y urgencia.
+        Aplica el orden <strong>Descuento → Urgencia → IVA</strong>. Opera internamente en <strong>céntimos</strong>
+        y muestra a <strong>2 decimales</strong>.
+      </p>
+      <ul>
+        <li>IVA 21%; A4: B/N 0,05 €·pág, Color 0,20 €·pág; A3 = ×1,5; Doble cara = ×0,9.</li>
+        <li>Encuadernación 3,00 €·ud; Urgencia +15%; Descuento por volumen: ≥30 € → 5%, ≥60 € → 10%.</li>
+      </ul>
+      <p class="hint">
+        Consejo: valida entradas (negativos/NaN → 0) y trabaja siempre en céntimos para evitar errores de precisión.
+      </p>
+    </section>
+
+    <!-- Ejemplo -->
+    <section class="card">
+      <h2>Ejemplo de entrada (vía <code>prompt</code>)</h2>
+      <pre>Páginas B/N: 30
+Páginas Color: 0
+Tamaño: A4
+Doble cara: no
+Nº de encuadernaciones: 1
+Urgente: no</pre>
+
+      <h2>Salida esperada (resumen)</h2>
+      <pre>TOTAL: 5.45 €  (Detalle completo en consola)</pre>
+      <p class="hint">
+        Abre la <strong>Consola</strong> del navegador (F12). Este HTML carga el JS externo y te pedirá los datos.
+      </p>
+      <span class="badge">ABP · UD2 · DWEC</span>
+    </section>
+  </main>
+
+  <div class="footer">© IES Lázaro Cárdenas · DWEC · DAW · JuanRB</div>
+
+  <!-- Carga del JS del alumno -->
+  <script src="copisteria.js"></script>
+</body>
+</html>
