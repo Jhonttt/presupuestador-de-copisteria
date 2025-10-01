@@ -4,18 +4,18 @@
   Orden de cálculo obligatorio: DESCUENTO → URGENCIA → IVA.
 */
 
+// parámentros (constantes)
+const IVA = 0.21;                  // 21%
+const PRECIO_BN_A4 = 0.05;         // €/pág B/N (A4)
+const PRECIO_COLOR_A4 = 0.20;      // €/pág Color (A4)
+const RECARGO_A3_FACTOR = 1.5;     // A3 = A4 × 1.5
+const FACTOR_DOBLE_CARA = 0.9;     // Doble cara = × 0.9
+const PRECIO_ENCUADERNACION = 3.00;// € por encuadernación
+const RECARGO_URGENCIA = 0.15;     // +15% (si urgente)
+const UMBRAL1 = 30, DTO1 = 0.05;   // ≥30€ → 5%
+const UMBRAL2 = 60, DTO2 = 0.10;   // ≥60€ → 10%
 
 function main() {
-   // parámentros (constantes)
-   const IVA = 0.21;                  // 21%
-   const PRECIO_BN_A4 = 0.05;         // €/pág B/N (A4)
-   const PRECIO_COLOR_A4 = 0.20;      // €/pág Color (A4)
-   const RECARGO_A3_FACTOR = 1.5;     // A3 = A4 × 1.5
-   const FACTOR_DOBLE_CARA = 0.9;     // Doble cara = × 0.9
-   const PRECIO_ENCUADERNACION = 3.00;// € por encuadernación
-   const RECARGO_URGENCIA = 0.15;     // +15% (si urgente)
-   const UMBRAL1 = 30, DTO1 = 0.05;   // ≥30€ → 5%
-   const UMBRAL2 = 60, DTO2 = 0.10;   // ≥60€ → 10%
    // entradas (variables)
    let pagBN = prompt("Introduce las páginas en blanco y negro que desees:");
    let pagC = prompt("Introduce las páginas en color:");
@@ -23,8 +23,6 @@ function main() {
    let dobleCara = prompt("¿Las quieres de doble cara?:");
    let numEncuader = prompt("Introduce el número de encuadernaciones que desees:");
    let urgencia = prompt("¿Es urgente?:");
-
-
 }
 
 function validarNumeros(cantidad) {
@@ -32,6 +30,8 @@ function validarNumeros(cantidad) {
     alert("Introduce un número válido (>= 0)");
     console.log("Error, debe ser un número, y tiene que ser mayor o igual a 0");
     return false;
+  } else if (cantidad = 0) {
+    return null;
   } else {
     return true;
   }
@@ -56,6 +56,33 @@ function validarSize(size) {
     return false; 
   }
 }
+
+function precioPagBNA4(numPag) {
+  return numPag * (PRECIO_BN_A4 * 100);
+}
+
+function precioPagColorA4(numPag) {
+  return numPag * (PRECIO_COLOR_A4 * 100);
+}
+
+function precioPagBNA3(numPag) {
+  return precioPagBNA4(numPag) * (RECARGO_A3_FACTOR * 100);
+}
+
+function precioPagColorA3(numPag) {
+  return precioPagColorA4(numPag) * (RECARGO_A3_FACTOR * 100);
+}
+
+function dobleCara(precio) {
+  return precio * FACTOR_DOBLE_CARA;
+}
+
+
+
+
+
+
+
 
 /*
 Reglas de negocio a aplicar:
