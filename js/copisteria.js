@@ -17,14 +17,24 @@ function main() {
    const UMBRAL1 = 30, DTO1 = 0.05;   // ≥30€ → 5%
    const UMBRAL2 = 60, DTO2 = 0.10;   // ≥60€ → 10%
    // entradas (variables)
-   let pagBN;
-   let pagC;
-   let size;
-   let dobleCara;
-   let numEncuader;
-   let urgencia;
+   let pagBN = prompt("Introduce las páginas en blanco y negro que desees:");
+   let pagC = prompt("Introduce las páginas en color:");
+   let size = prompt("Introduce el tamaño de las páginas (A4/A3):");
+   let dobleCara = prompt("¿Las quieres de doble cara?:");
+   let numEncuader = prompt("Introduce el número de encuadernaciones que desees:");
+   let urgencia = prompt("¿Es urgente?:");
 
 
+}
+
+function validarNumeros(cantidad) {
+  if (Number.isNaN(Number(cantidad))) {
+    alert("Introduce un número válido (>= 0)");
+    console.log("Error, debe ser un número, y tiene que ser mayor o igual a 0");
+    return false;
+  } else {
+    return true;
+  }
 }
 
 
