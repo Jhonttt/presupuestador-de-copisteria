@@ -16,16 +16,17 @@ function main() {
    const RECARGO_URGENCIA = 0.15;     // +15% (si urgente)
    const UMBRAL1 = 30, DTO1 = 0.05;   // ≥30€ → 5%
    const UMBRAL2 = 60, DTO2 = 0.10;   // ≥60€ → 10%
-   // entradas (variables)
+   /* entradas (variables)
    let pagBN = prompt("Introduce las páginas en blanco y negro que desees:");
    let pagC = prompt("Introduce las páginas en color:");
    let size = prompt("Introduce el tamaño de las páginas (A4/A3):");
    let dobleCara = prompt("¿Las quieres de doble cara?:");
    let numEncuader = prompt("Introduce el número de encuadernaciones que desees:");
-   let urgencia = prompt("¿Es urgente?:");
+   let urgencia = prompt("¿Es urgente?:");*/
 
 
 }
+//Validar dobleCara
 
 function validarNumeros(cantidad) {
   if (Number.isNaN(Number(cantidad))) {
@@ -49,12 +50,34 @@ function validarRespuesta(resp) {
 
 //Funcion A4 o A3
 function validarSize(size) {
-  let respuesta = String(resp).toLowerCase().trim();
+  let respuesta = String(size).toLowerCase().trim();
   if (respuesta !== 'a4' && respuesta !== 'a3') {
     alert('Introduce únicamente las opciones "A4" o "A3"');
     console.log('Error valores diferentes a "A4" o "A3"');
     return false; 
   }
+}
+//Menu
+/* Copias color y b/n, tamaño, impresion doble cara, 
+encuadernacion, urgencia
+*/
+function menu (){
+  //Declaración de Variables
+  let pagBN, pagC, size, dobleCara, numEncuader, urgencia;
+  do {
+      pagBN = prompt("Introduce las páginas en blanco y negro que desees:");
+  } while (!validarNumeros(pagBN));
+   //Almacenamos el valor
+   pagBN = Number(pagBN);
+
+  do {
+       pagC = prompt("Introduce las páginas en color:");
+
+  } while (!validarNumeros(pagC));
+    size = prompt("Introduce el tamaño de las páginas (A4/A3):");
+    dobleCara = prompt("¿Las quieres de doble cara?:");
+    numEncuader = prompt("Introduce el número de encuadernaciones que desees:");
+    urgencia = prompt("¿Es urgente?:");
 }
 
 /*
