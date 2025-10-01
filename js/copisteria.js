@@ -26,9 +26,26 @@ function main() {
 
 
 }
+// Funcion para validar el si o no (Doble Cara, Urgencia)
+function validarRespuesta(resp) {
+  let respuesta = String(resp).toLowerCase().trim();
+  if (respuesta !== 'si' && respuesta !== 'no') {
+    alert('Introduce únicamente las opciones "Si" o "No"');
+    console.log('Error valores diferentes a "Si" o "NO"');
+    return false; 
+  }
+  return true; 
+}
 
-
-
+//Funcion A4 o A3
+function validarSize(size) {
+  let respuesta = String(resp).toLowerCase().trim();
+  if (respuesta !== 'a4' && respuesta !== 'a3') {
+    alert('Introduce únicamente las opciones "A4" o "A3"');
+    console.log('Error valores diferentes a "A4" o "A3"');
+    return false; 
+  }
+}
 
 /*
 Reglas de negocio a aplicar:
