@@ -80,13 +80,21 @@ function pedirDobleCara(tipo) {
 }
 
 //Funcion para pedir la cantidad de encuadernaciones
-function pedirEncuadernacion(tipo) {
+/* Para las encuadernaciones mínimo deben ser 5 hojas
+   Si es doble cara las paginas son 10
+   Tener en cuenta dos casos color , b/n
+   Las cantidad de páginas debe ser al menos el doble de las encuadernaciones. 
+*/
+function pedirEncuadernacion(tipo,dobleCara, pagTotales) {
   do {
     numEncuader = prompt(`Introduce el número de encuadernaciones${tipo} que deseas:`);
   } while (!validarNumeros(numEncuader));
+    console.log("Se ha ejecutado la función Pedir Encuadernacion");
   return numEncuader = Number(numEncuader);
-  console.log("Se ha ejecutado la función Pedir Encuadernacion");
 }
+
+//Funcion para calcular descuentos
+
 
 /*
   Reglas: operar INTERNAMENTE en céntimos; mostrar a 2 decimales.
@@ -159,10 +167,7 @@ function calcular(pagBN, pagC, size, dobleCara, numEncuader, urgencia) {
   let precio = 0;
 
 
-
-
 }
-
 
 
 // Funciones de calculos.
