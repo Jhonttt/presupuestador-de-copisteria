@@ -9,6 +9,8 @@ const PRECIO_ENCUADERNACION = 3.00;// € por encuadernación
 const RECARGO_URGENCIA = 0.15;     // +15% (si urgente)
 const UMBRAL1 = 30, DTO1 = 0.05;   // ≥30€ → 5%
 const UMBRAL2 = 60, DTO2 = 0.10;   // ≥60€ → 10%
+var size;
+var dobleCara;
 
 // Funciones para validar:
 
@@ -61,7 +63,7 @@ function pedirSize(tipo) {
     do {
         size = prompt(`Introduce el tamaño de las páginas ${tipo} (A4/A3):`);
     } while (!validarSize(size));
-    return size;
+    return size.toLowerCase;
 }
 
 function pedirDobleCara(tipo) {
@@ -70,6 +72,7 @@ function pedirDobleCara(tipo) {
     } while (validarRespuesta(dobleCara) == null);
     return dobleCara = validarRespuesta(dobleCara);
 }
+
 
 /*
   Reglas: operar INTERNAMENTE en céntimos; mostrar a 2 decimales.
@@ -103,8 +106,6 @@ function menu() {
         if (pagBN == 0 && pagC == 0) alert("Introduce páginas de un tipo.");
     } while (pagBN == 0 && pagC == 0);
 
-    if (flag !== null) var size, dobleCara; 
-
     switch (flag) {
         case true:
             size = pedirSize("a color");
@@ -122,39 +123,58 @@ function menu() {
             dobleCaraC = pedirDobleCara(" las páginas a color");
             break;
         default:
+            alert("Opción no contemplada.");
             console.log("Opción no válidada");
             break;
     }
 
+    do {
+        numEncuader = prompt("Introduce el número de encuadernaciones que desees:");
+    } while (!validarNumeros(numEncuader));
+    numEncuader = Number(numEncuader);
 
-
-
-
-
-        do {
-            dobleCara = prompt("¿Las quieres de doble cara?:");
-        } while (validarRespuesta(dobleCara) == null);
-        dobleCara = validarRespuesta(dobleCara);
-
-        do {
-            numEncuader = prompt("Introduce el número de encuadernaciones que desees:");
-        } while (!validarNumeros(numEncuader));
-        numEncuader = Number(numEncuader);
-
-        do {
-            urgencia = prompt("¿Es urgente?:"); 
-        } while (validarRespuesta(urgencia) == null);
-        urgencia = validarRespuesta(urgencia);
+    do {
+        urgencia = prompt("¿Es urgente?:"); 
+    } while (validarRespuesta(urgencia) == null);
+    urgencia = validarRespuesta(urgencia);
     
 
+    switch (flag) {
+        case true || false:
+            calcular(pagBN, pagC, size, dobleCara, numEncuader, urgencia, flag);
+            break;
+        case null:
 
+            break;
+        default:
+            alert("Opción no contemplada.");
+            console.log("Opción no válidada");
+            break;
+    }
     
 
 }
 
 // Calculos
-function calcular(pagBN, pagC, size, dobleCara, numEncuader, urgencia) {
+function calcular(pagBN, pagC, size, dobleCara, numEncuader, urgencia, flag) {
     let precio = 0;
+
+    switch (flag) {
+        case true:
+            precio = precioPagC(pagC, size);
+            if (dobleCara) precio = dobleCara(precio);
+            if (numEncuader != 0) precio += encuadernar(numEncuader, dobleCara);
+            break;
+        case false:
+            precio = precioPagBN(pagBN, size);
+            if (dobleCara) precio = dobleCara(precio);
+            break;
+        default:
+            alert("Opción no contemplada.");
+            console.log("Opción no válidada");
+            break;
+    }
+
 
 
 
@@ -164,20 +184,23 @@ function calcular(pagBN, pagC, size, dobleCara, numEncuader, urgencia) {
 
 
 // Funciones de calculos.
-function precioPagBNA4(numPag) {
-    return numPag * (PRECIO_BN_A4 * 100);
+function precioPagBN(numPag, size) {
+    let a4BN = numPag * (PRECIO_BN_A4 * 100);
+    if (size == "a4") {
+        return a4BN;
+    } else if (size == "a3") {
+        return a4BN * (RECARGO_A3_FACTOR * 100);
+    }
+    
 }
 
-function precioPagColorA4(numPag) {
-    return numPag * (PRECIO_COLOR_A4 * 100);
-}
-
-function precioPagBNA3(numPag) {
-    return precioPagBNA4(numPag) * (RECARGO_A3_FACTOR * 100);
-}
-
-function precioPagColorA3(numPag) {
-    return precioPagColorA4(numPag) * (RECARGO_A3_FACTOR * 100);
+function precioPagC(numPag, size) {
+    let a4C = numPag * (PRECIO_COLOR_A4 * 100);
+    if (size == "a4") {
+        return a4C;
+    } else if (size == "a3") {
+        return a4C * (RECARGO_A3_FACTOR * 100);
+    }
 }
 
 function dobleCara(precio) {
