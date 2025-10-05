@@ -13,10 +13,11 @@ const UMBRAL2 = 60, DTO2 = 0.10;   // ≥60€ → 10%
 var size, dobleCara, numEncuader;
 
 // Funciones para validar los tipos de datos:
-// Función para validar si se introduce un número, si el número que se introduce es 0, o si no se introduce un número.
+// Función para validar si se introduce un número, si el número que se introduce es 0, 
+//o si no se introduce un número.
 function validarNumeros(cant) {
   let cantidad = Number(cant);
-  if (Number.isNaN(cantidad) || cantidad<0 || cantidad>=500) {
+  if (Number.isNaN(cantidad) || cantidad < 0 || cantidad >= 500) {
     alert("Introduce un número válido (>= 0) o (<=500).");
     console.log("Error, debe ser un número, y tiene que ser mayor o igual a 0.");
     return false;
@@ -68,13 +69,13 @@ function pedirSize(tipo) {
   do {
     size = prompt(`Introduce el tamaño de las páginas ${tipo} (A4/A3):`);
   } while (!validarSize(size));
-  return size;
+  return size.toLowerCase();
 }
 
 //Funcion para que el usuario indique si quiere las copias doble cara
 function pedirDobleCara(tipo) {
   do {
-    dobleCara = prompt(`¿Las quieres de doble cara${tipo}?:`);
+    dobleCara = prompt(`¿Quieres de doble cara${tipo}?:`);
   } while (validarRespuesta(dobleCara) == null);
   return dobleCara = validarRespuesta(dobleCara);
 }
@@ -84,14 +85,34 @@ function pedirDobleCara(tipo) {
    Si es doble cara las paginas son 10
    Tener en cuenta dos casos color , b/n
    Las cantidad de páginas debe ser al menos el doble de las encuadernaciones. 
-*/
-function pedirEncuadernacion(tipo,dobleCara, pagTotales) {
+*/function pedirEncuadernacion(tipo, dobleCara, numPaginas) {
+  numPaginas = Number(numPaginas);
+
+  // Calculamos el mínimo de páginas por encuadernación según si es doble cara o no (Operador Ternario)
+  let numMinimopag = dobleCara ? 10 : 5;
+
+  // Calculamos el máximo de encuadernaciones posibles
+  // Trunc nos da la parte entera, así evitamos decimales
+  let numMaximopag = Math.trunc(numPaginas / numMinimopag);
+
+  // Si no hay suficientes páginas para hacer al menos 1 encuadernación
+  if (numMaximopag === 0) {
+    console.log(`No hay suficientes páginas para ninguna encuadernación ${tipo}.`);
+    alert(`No hay suficientes páginas para ninguna encuadernación ${tipo}.`);
+    return 0; // Devolvemos 0, porque no se puede encuadernar
+  }
+
+  // Declaramos la variable donde almacenaremos el número de encuadernaciones que el usuario quiere
+  let numEncuader;
   do {
-    numEncuader = prompt(`Introduce el número de encuadernaciones${tipo} que deseas:`);
-  } while (!validarNumeros(numEncuader));
-    console.log("Se ha ejecutado la función Pedir Encuadernacion");
-  return numEncuader = Number(numEncuader);
+    // Mostramos el máximo permitido
+    numEncuader = prompt(`Introduce el número de encuadernaciones ${tipo} que deseas (máx ${numMaximopag}):`);
+
+  } while (!validarNumeros(numEncuader) || Number(numEncuader) > numMaximopag);
+  console.log(`Validación correcta: ${numEncuader} encuadernaciones ${tipo} (máx: ${numMaximopag})`);
+  return Number(numEncuader);
 }
+
 
 //Funcion para calcular descuentos
 
@@ -127,30 +148,33 @@ function menu() {
     if (pagBN == 0 && pagC == 0) alert("Introduce páginas de un tipo.");
   } while (pagBN == 0 && pagC == 0);
 
-  if (flag !== null);
-
+  //El switch se ejecutará con el resultado de la validación de páginas
   switch (flag) {
+    //En caso de que solo quiera copias a color
     case true:
       size = pedirSize("a color");
-      dobleCara = pedirDobleCara("");
-      numEncuader = pedirEncuadernacion("");
+      cdobleCara = dobleCara;
+      numEncuader = pedirEncuadernacion(" a color", dobleCara, pagC);
       break;
+    //En caso de que solo quiera copias a B/N
     case false:
       size = pedirSize("blanco y negro");
       dobleCara = pedirDobleCara("");
-      numEncuader = pedirEncuadernacion("");
+      numEncuader = pedirEncuadernacion(" a blanco y negro", dobleCara, pagBN);
+
       break;
+    //En caso de que solo quiera copias a color y a B/N
     case null:
       var sizeBN, sizeC, dobleCaraBN, dobleCaraC, encuadernacionC, encuadernacionBN;
       sizeBN = pedirSize("blanco y negro");
       sizeC = pedirSize("a color");
       dobleCaraBN = pedirDobleCara(" las páginas en blanco y negro");
       dobleCaraC = pedirDobleCara(" las páginas a color");
-      encuadernacionBN = pedirEncuadernacion("de las páginas a blanco y negro");
-      encuadernacionC = pedirEncuadernacion("de las páginas a blanco y negro ");
-
+      encuadernacionBN = pedirEncuadernacion(" de las páginas a blanco y negro", dobleCaraBN, pagBN);
+      encuadernacionC = pedirEncuadernacion(" de las páginas a color", dobleCaraC, pagC);
       break;
     default:
+      alert("Opción no contemplada.");
       console.log("Opción no válidada");
       break;
   }
@@ -160,31 +184,60 @@ function menu() {
   } while (validarRespuesta(urgencia) == null);
   urgencia = validarRespuesta(urgencia);
 
-}
 
+
+  switch (flag) {
+    case true || false:
+      calcular(pagBN, pagC, size, dobleCara, numEncuader, urgencia, flag);
+      break;
+    case null:
+
+      break;
+    default:
+      alert("Opción no contemplada.");
+      console.log("Opción no válidada");
+      break;
+  }
+}
 // Calculos
-function calcular(pagBN, pagC, size, dobleCara, numEncuader, urgencia) {
+function calcular(pagBN, pagC, size, dobleCara, numEncuader, urgencia, flag) {
   let precio = 0;
 
-
+  switch (flag) {
+    case true:
+      precio = precioPagC(pagC, size);
+      if (dobleCara) precio = dobleCara(precio);
+      if (numEncuader != 0) precio += encuadernar(numEncuader, dobleCara);
+      break;
+    case false:
+      precio = precioPagBN(pagBN, size);
+      if (dobleCara) precio = dobleCara(precio);
+      break;
+    default:
+      alert("Opción no contemplada.");
+      console.log("Opción no válidada");
+      break;
+  }
 }
-
 
 // Funciones de calculos.
-function precioPagBNA4(numPag) {
-  return numPag * (PRECIO_BN_A4 * 100);
+function precioPagBN(numPag, size) {
+  let a4BN = numPag * (PRECIO_BN_A4 * 100);
+  if (size == "a4") {
+    return a4BN;
+  } else if (size == "a3") {
+    return a4BN * (RECARGO_A3_FACTOR * 100);
+  }
+
 }
 
-function precioPagColorA4(numPag) {
-  return numPag * (PRECIO_COLOR_A4 * 100);
-}
-
-function precioPagBNA3(numPag) {
-  return precioPagBNA4(numPag) * (RECARGO_A3_FACTOR * 100);
-}
-
-function precioPagColorA3(numPag) {
-  return precioPagColorA4(numPag) * (RECARGO_A3_FACTOR * 100);
+function precioPagC(numPag, size) {
+  let a4C = numPag * (PRECIO_COLOR_A4 * 100);
+  if (size == "a4") {
+    return a4C;
+  } else if (size == "a3") {
+    return a4C * (RECARGO_A3_FACTOR * 100);
+  }
 }
 
 function dobleCara(precio) {
@@ -194,12 +247,6 @@ function dobleCara(precio) {
 function encuadernar(unidades) {
   return unidades * (PRECIO_ENCUADERNACION * 100);
 }
-
-
-
-
-
-
 
 
 /*
