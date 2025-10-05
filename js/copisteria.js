@@ -73,11 +73,16 @@ function pedirSize(tipo) {
 }
 
 //Funcion para que el usuario indique si quiere las copias doble cara
-function pedirDobleCara(tipo) {
+function pedirDobleCara(tipo, pag) {
+  //Validar si mínimo pidió 2 copias
+  if (pag<2) {
+    alert("Debe de haber mínimo 2 copias para hacerlas doble cara");
+  }else{
   do {
     dobleCara = prompt(`¿Quieres de doble cara${tipo}?:`);
   } while (validarRespuesta(dobleCara) == null);
   return dobleCara = validarRespuesta(dobleCara);
+  }
 }
 
 //Funcion para pedir la cantidad de encuadernaciones
@@ -113,8 +118,6 @@ function pedirDobleCara(tipo) {
   return Number(numEncuader);
 }
 
-
-//Funcion para calcular descuentos
 
 
 /*
@@ -153,13 +156,13 @@ function menu() {
     //En caso de que solo quiera copias a color
     case true:
       size = pedirSize("a color");
-      cdobleCara = dobleCara;
+      dobleCara = pedirDobleCara("", pagC);
       numEncuader = pedirEncuadernacion(" a color", dobleCara, pagC);
       break;
     //En caso de que solo quiera copias a B/N
     case false:
       size = pedirSize("blanco y negro");
-      dobleCara = pedirDobleCara("");
+      dobleCara = pedirDobleCara("", pagBN);
       numEncuader = pedirEncuadernacion(" a blanco y negro", dobleCara, pagBN);
 
       break;
@@ -168,8 +171,8 @@ function menu() {
       var sizeBN, sizeC, dobleCaraBN, dobleCaraC, encuadernacionC, encuadernacionBN;
       sizeBN = pedirSize("blanco y negro");
       sizeC = pedirSize("a color");
-      dobleCaraBN = pedirDobleCara(" las páginas en blanco y negro");
-      dobleCaraC = pedirDobleCara(" las páginas a color");
+      dobleCaraBN = pedirDobleCara(" las páginas en blanco y negro", pagBN);
+      dobleCaraC = pedirDobleCara(" las páginas a color", pagC);
       encuadernacionBN = pedirEncuadernacion(" de las páginas a blanco y negro", dobleCaraBN, pagBN);
       encuadernacionC = pedirEncuadernacion(" de las páginas a color", dobleCaraC, pagC);
       break;
