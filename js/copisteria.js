@@ -3,7 +3,7 @@
 function main() {
     menu();
 }
-
+// Ver var, mesaje de minimo x para encuadernar, minimo x para realizar el pedido.
 // parámentros (constantes)
 const IVA = 0.21;                  // 21%
 const PRECIO_BN_A4 = 0.05;         // €/pág B/N (A4)
@@ -14,6 +14,8 @@ const PRECIO_ENCUADERNACION = 3.00;// € por encuadernación
 const RECARGO_URGENCIA = 0.15;     // +15% (si urgente)
 const UMBRAL1 = 30, DTO1 = 0.05;   // ≥30€ → 5%
 const UMBRAL2 = 60, DTO2 = 0.10;   // ≥60€ → 10%
+const MIN_PAGS = 5;
+const MIN_FACTURABLE = 1;
 // variables
 var size, dobleCara, numEncuader;
 
@@ -38,7 +40,7 @@ function validarRespuesta(resp) {
         console.error('Error valores diferentes a "Si" y "No".');
         return null;
     }
-    
+  
     console.log("Se ha ejecutado la función Validar Respuesta.");
     return respuesta == "si";
 }
@@ -67,7 +69,6 @@ function validarPaginas(blancoYNegro, color) {
     }
 }
 
-// Funciones para pedir datos
 // Función para pedir el tipo de tamaño de copia
 function pedirSize(tipo) {
     do {
@@ -118,6 +119,7 @@ function pedirEncuadernacion(tipo, dobleCara, numPaginas) {
 // Menu
 function menu() {
     let pagBN, pagC, urgencia, flag, total;
+    //Verificar que al menos exista una copia.
     do {
         do {
             pagBN = prompt("Introduce las páginas en blanco y negro que desees:");
@@ -128,23 +130,27 @@ function menu() {
             pagC = prompt("Introduce las páginas en color:");
         } while (!validarNumeros(pagC));
         pagC = Number(pagC);
-
+        //Validamos el tipo de copia que quiere el usuario
         flag = validarPaginas(pagBN, pagC);
 
-        if (pagBN == 0 && pagC == 0) alert("Introduce páginas de un tipo.");
-    } while (pagBN == 0 && pagC == 0);
+        if ((pagBN + pagC) < MIN_PAGS) alert(`Introduce un mínimo de ${MIN_PAGS} páginas.`);
+    } while (pagBN == 0 && pagC == 0 || (pagBN + pagC) < MIN_PAGS);
 
+    //Menu para pedir datos si existen copias a B/N, a Color o ambas
     switch (flag) {
+        //Copias a color
         case true:
             size = pedirSize("");
             dobleCara = pedirDobleCara("", pagC);
             numEncuader = pedirEncuadernacion("", dobleCara, pagC);
             break;
+        //Copias a B/N
         case false:
             size = pedirSize("");
             dobleCara = pedirDobleCara("", pagBN);
             numEncuader = pedirEncuadernacion("", dobleCara, pagBN);
             break;
+        //Copias a Color y B/N
         case null:
             var sizeBN, sizeC, dobleCaraBN, dobleCaraC, numEncuaderC, numEncuaderBN;
             sizeBN = pedirSize(" blanco y negro");
@@ -165,6 +171,14 @@ function menu() {
     } while (validarRespuesta(urgencia) == null);
     urgencia = validarRespuesta(urgencia);
 
+    //Calculamos el total de las copias a color y B/N
+    if (flag === null) total = calcular2(pagBN, pagC, sizeBN, sizeC, dobleCaraBN, dobleCaraC, numEncuaderBN, numEncuaderC, urgencia);
+    
+    //Calculamos el total si solo quiere un tipo de copia (B/N o Color)
+    else total = calcular(pagBN, pagC, size, dobleCara, numEncuader, urgencia, flag);
+
+    if (total < MIN_FACTURABLE) alert(`El total de su pedido de ${total} es menor al mínimo facutable de ${MIN_FACTURABLE}, por tanto no se aplicara.`)
+    else console.log("Precio total: "+total/100);
     if (flag === null) total = calcular2(pagBN, pagC, sizeBN, sizeC, dobleCaraBN, dobleCaraC, numEncuaderBN, numEncuaderC, urgencia);
     else total = calcular(pagBN, pagC, size, dobleCara, numEncuader, urgencia, flag);
 
@@ -172,14 +186,18 @@ function menu() {
 }
     
 // Calculos
+  /*flag true color, false bn, null ambas*/
+  //Funcion Calcular total
 function calcular(pagBN, pagC, size, dobleCara, numEncuader, urgencia, flag) {
     let precio = 0;
-    
+    //Menú para escoger que tipo de copia es (B/N o Color)
     switch (flag) {
+        //Calcular paginas a color
         case true:
             precio = precioPagC(pagC, size);
             console.log("Precio pag Color" + precio);
             break;
+        //Calcular paginas a B/N
         case false:
             precio = precioPagBN(pagBN, size);
             console.log("Precio pag BN" + precio);
@@ -189,16 +207,17 @@ function calcular(pagBN, pagC, size, dobleCara, numEncuader, urgencia, flag) {
             console.log("Opción no válidada.");
             break;
     }
-
+    //Verificaciones doble cara, encuadernaciones, urgencia, descuento
     if (dobleCara) precio = calcularDobleCara(precio);
-    console.log("Precio Doble cara" + precio);
+    console.log("Precio Doble cara: " + precio/100);
     if (numEncuader != 0) precio += calcularEncuadernar(numEncuader);
-    console.log("Precio Num encuader" + precio);
+    console.log("Precio Numero de Encuadernaciones: " + precio/100);
     if (precio >= (UMBRAL1 * 100)) precio = calcularDescuento(precio);
-    console.log("Precio descuento" + precio);
+    console.log("Precio descuento: " + precio/100);
     if (urgencia) precio = calcularUrgencia(precio);
-    console.log("Precio urgencia" + precio);
+    console.log("Precio urgencia: " + precio/100);
     console.log("Se ha ejecutado la función Calcular.");
+    console.log("Precio Total:" + (precio * IVA)/100);
     return precio + (precio * IVA);
 }
 
@@ -234,9 +253,11 @@ function precioPagBN(numPag, size) {
     
     if (size == "a4") {
         console.log(mensaje);
+         console.log("Precio páginas a blanco y negro A4: "+a4BN/100);
         return a4BN;
     } else if (size == "a3") {
         console.log(mensaje);
+         console.log("Precio páginas a blanco y negro A3: "+((a4BN * RECARGO_A3_FACTOR)/100));
         return a4BN * RECARGO_A3_FACTOR;
     }
     
@@ -250,9 +271,11 @@ function precioPagC(numPag, size) {
     
     if (size == "a4") {
         console.log(mensaje);
+        console.log("Precio páginas a color A4: "+a4C/100);
         return a4C;
     } else if (size == "a3") {
         console.log(mensaje);
+        console.log("Precio páginas a color A3: "+((a4C * RECARGO_A3_FACTOR)/100));
         return a4C * RECARGO_A3_FACTOR;
     }
     
@@ -262,24 +285,29 @@ function precioPagC(numPag, size) {
 
 function calcularDobleCara(precio) {
     console.log("Se ha ejecutado la función Calcular Doble Cara.");
+    console.log("Precio Doble Cara: "+((precio * FACTOR_DOBLE_CARA)/100));
     return precio * FACTOR_DOBLE_CARA;
 }
 
 function calcularEncuadernar(unidades) {
     console.log("Se ha ejecutado la función Calcular Encuadernar.");
+    console.log("Precio Encuadernaciones: " + ((unidades * PRECIO_ENCUADERNACION)/100));
     return unidades * PRECIO_ENCUADERNACION;
 }
 
 function calcularDescuento(precio) {
     console.log("Se ha ejecutado la función Calcular Descuento.");
     if (precio >= (UMBRAL1 * 100) && precio < (UMBRAL2 * 100)) {
+        console.log("Precio Descuento: "+((precio - (precio * DTO1))/100));
         return precio - (precio * DTO1);
     }
+    console.log("Precio Descuento: "+((precio - (precio * DTO2))/100));
     return precio - (precio * DTO2);
 }
 
 function calcularUrgencia(precio) {
     console.log("Se ha ejecutado la función Calcular Urgencia.");
+    console.log("Precio Urgencia: "+ (precio + (precio * RECARGO_URGENCIA))/100)
     return precio + (precio * RECARGO_URGENCIA);
 }
 
