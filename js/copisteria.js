@@ -179,6 +179,10 @@ function menu() {
 
     if (total < MIN_FACTURABLE) alert(`El total de su pedido de ${total} es menor al mínimo facutable de ${MIN_FACTURABLE}, por tanto no se aplicara.`)
     else console.log("Precio total: "+total/100);
+    if (flag === null) total = calcular2(pagBN, pagC, sizeBN, sizeC, dobleCaraBN, dobleCaraC, numEncuaderBN, numEncuaderC, urgencia);
+    else total = calcular(pagBN, pagC, size, dobleCara, numEncuader, urgencia, flag);
+
+    console.log(`Precio total: ${total}`);
 }
     
 // Calculos
