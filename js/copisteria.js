@@ -1,6 +1,4 @@
 "use strict";
-// Pendiente: Ver las variables var
-
 // Funcion principal
 function main() {
     menu();
@@ -23,9 +21,9 @@ var size, dobleCara, numEncuader;
 // Función para validar si se introduce un número o si no se introduce un número.
 function validarNumeros(cant) {
     const cantidad = Number(cant);
-    if (Number.isNaN(cantidad) || cantidad < 0 || cantidad >= 500) {
+    if (Number.isNaN(cantidad) || cantidad < 0 || cantidad > 500) {
         alert("Introduce un número válido (>= 0) o (<= 500).");
-        console.log("Error, debe ser un número, y tiene que ser mayor o igual a 0 y menor o igual a 500.");
+        console.error("Error, debe ser un número, y tiene que ser mayor o igual a 0 y menor o igual a 500.");
         return false;
     }
     console.log("Se ha ejecutado la función Validar Números.");
@@ -37,7 +35,7 @@ function validarRespuesta(resp) {
     const respuesta = String(resp).toLowerCase().trim();
     if (respuesta !== 'si' && respuesta !== 'no') {
         alert('Introduce únicamente las opciones "Si" o "No".');
-        console.log('Error valores diferentes a "Si" y "No".');
+        console.error('Error valores diferentes a "Si" y "No".');
         return null;
     }
     
@@ -50,7 +48,7 @@ function validarSize(size) {
     const respuesta = String(size).toLowerCase().trim();
     if (respuesta !== 'a4' && respuesta !== 'a3') {
         alert('Introduce únicamente las opciones "A4" o "A3".');
-        console.log('Error valores diferentes a "A4" y "A3".');
+        console.error('Error valores diferentes a "A4" y "A3".');
         return false;
     }
     console.log("Se ha ejecutado la función Validar Tamaño.");
@@ -76,68 +74,58 @@ function pedirSize(tipo) {
         size = prompt(`Introduce el tamaño de las páginas${tipo} (A4/A3):`);
     } while (!validarSize(size));
     console.log("Se ha ejecutado la función Pedir Size.");
-    return size.toLowerCase;
+    return size.toLowerCase();
 }
 
 // Funcion para que el usuario indique si quiere las copias doble cara
 function pedirDobleCara(tipo, pag) {
-    //Validar si mínimo pidió 2 copias
     if (pag < 2) {
-        alert("Debe de haber mínimo 2 copias para hacerlas doble cara");
+        alert("Debe de haber mínimo 2 copias para hacerlas doble cara.");
     } else {
         do {
             dobleCara = prompt(`¿Quieres de doble cara${tipo}?:`);
         } while (validarRespuesta(dobleCara) == null);
+        console.log("Se ha ejecutado la función Pedir Doble Cara.");
         return dobleCara = validarRespuesta(dobleCara);
     }
 }
 
 // Funcion para pedir la cantidad de encuadernaciones
-/* Para las encuadernaciones mínimo deben ser 5 hojas
-   Si es doble cara las paginas son 10
-   Tener en cuenta dos casos color , b/n
-   Las cantidad de páginas debe ser al menos el doble de las encuadernaciones. */
 function pedirEncuadernacion(tipo, dobleCara, numPaginas) {
     numPaginas = Number(numPaginas);
 
     // Calculamos el mínimo de páginas por encuadernación según si es doble cara o no (Operador Ternario)
-    let numMinimopag = dobleCara ? 10 : 5;
+    let numMinimoPag = dobleCara ? 10 : 5;
 
     // Calculamos el máximo de encuadernaciones posibles
-    // Trunc nos da la parte entera, así evitamos decimales
-    let numMaximopag = Math.trunc(numPaginas / numMinimopag);
+    let numMaxEncuader = Math.trunc(numPaginas / numMinimoPag);
 
-    // Si no hay suficientes páginas para hacer al menos 1 encuadernación
-    if (numMaximopag === 0) {
-        console.log(`No hay suficientes páginas para ninguna encuadernación ${tipo}.`);
-        alert(`No hay suficientes páginas para ninguna encuadernación ${tipo}.`);
-        return 0; // Devolvemos 0, porque no se puede encuadernar
+    if (numMaxEncuader === 0) {
+        console.log(`No hay suficientes páginas para ninguna encuadernación${tipo}.`);
+        alert(`No hay suficientes páginas para ninguna encuadernación${tipo}.`);
+        return 0; 
     }
 
-    // Declaramos la variable donde almacenaremos el número de encuadernaciones que el usuario quiere
     let numEncuader;
     do {
         // Mostramos el máximo permitido
-        numEncuader = prompt(`Introduce el número de encuadernaciones ${tipo} que deseas (máx ${numMaximopag}):`);
-    } while (!validarNumeros(numEncuader) || Number(numEncuader) > numMaximopag);
-    console.log(`Validación correcta: ${numEncuader} encuadernaciones ${tipo} (máx: ${numMaximopag})`);
+        numEncuader = prompt(`Introduce el número de encuadernaciones${tipo} que deseas (máx ${numMaxEncuader}):`);
+    } while (!validarNumeros(numEncuader) || Number(numEncuader) > numMaxEncuader);
+    console.log(`Validación correcta: ${numEncuader} encuadernaciones${tipo} (máx: ${numMaxEncuader})`);
     return Number(numEncuader);
 }
 
-/* Reglas: operar INTERNAMENTE en céntimos; mostrar a 2 decimales.
-   Orden de cálculo obligatorio: DESCUENTO → URGENCIA → IVA. */
-
 // Menu
 function menu() {
-    let pagBN, pagC, urgencia, flag;
+    let pagBN, pagC, urgencia, flag, total;
     do {
         do {
-        pagBN = prompt("Introduce las páginas en blanco y negro que desees:");
+            pagBN = prompt("Introduce las páginas en blanco y negro que desees:");
         } while (!validarNumeros(pagBN));
         pagBN = Number(pagBN);   // Almacenamos el valor
 
         do {
-        pagC = prompt("Introduce las páginas en color:");
+            pagC = prompt("Introduce las páginas en color:");
         } while (!validarNumeros(pagC));
         pagC = Number(pagC);
 
@@ -168,7 +156,7 @@ function menu() {
             break;
         default:
             alert("Opción no contemplada.");
-            console.log("Opción no válidada");
+            console.error("Opción no válidada.");
             break;
     }
 
@@ -177,18 +165,10 @@ function menu() {
     } while (validarRespuesta(urgencia) == null);
     urgencia = validarRespuesta(urgencia);
 
-    switch (flag) {
-        case true || false:
-            calcular(pagBN, pagC, size, dobleCara, numEncuader, urgencia, flag);
-            break;
-        case null:
-            calcular2(pagBN, pagC, sizeBN, sizeC, dobleCaraBN, dobleCaraC, numEncuaderBN, numEncuaderC, urgencia);
-            break;
-        default:
-            alert("Opción no contemplada.");
-            console.log("Opción no válidada");
-            break;
-        }
+    if (flag === null) total = calcular2(pagBN, pagC, sizeBN, sizeC, dobleCaraBN, dobleCaraC, numEncuaderBN, numEncuaderC, urgencia);
+    else total = calcular(pagBN, pagC, size, dobleCara, numEncuader, urgencia, flag);
+
+    console.log(`Precio total: ${total}`);
 }
     
 // Calculos
@@ -198,19 +178,27 @@ function calcular(pagBN, pagC, size, dobleCara, numEncuader, urgencia, flag) {
     switch (flag) {
         case true:
             precio = precioPagC(pagC, size);
+            console.log("Precio pag Color" + precio);
+            break;
         case false:
             precio = precioPagBN(pagBN, size);
+            console.log("Precio pag BN" + precio);
+            break;
         default:
             alert("Opción no contemplada.");
-            console.log("Opción no válidada");
+            console.log("Opción no válidada.");
             break;
     }
 
     if (dobleCara) precio = calcularDobleCara(precio);
+    console.log("Precio Doble cara" + precio);
     if (numEncuader != 0) precio += calcularEncuadernar(numEncuader);
-    if (precio >= UMBRAL1) precio = calcularDescuento(precio);
+    console.log("Precio Num encuader" + precio);
+    if (precio >= (UMBRAL1 * 100)) precio = calcularDescuento(precio);
+    console.log("Precio descuento" + precio);
     if (urgencia) precio = calcularUrgencia(precio);
-    console.log("Se ha ejecutado la función Calcular.<br>");
+    console.log("Precio urgencia" + precio);
+    console.log("Se ha ejecutado la función Calcular.");
     return precio + (precio * IVA);
 }
 
@@ -230,11 +218,11 @@ function calcular2(pagBN, pagC, sizeBN, sizeC, dobleCaraBN, dobleCaraC, numEncua
 
     precioTotal = precioBN + precioC;
 
-    if (precioTotal >= UMBRAL1) precioTotal = descuento(precioTotal);
+    if (precioTotal >= (UMBRAL1 * 100)) precioTotal = descuento(precioTotal);
 
     if (urgencia) precioTotal = calcularUrgencia(precioTotal);
 
-    console.log("Se ha ejecutado la función Calcular.<br>");
+    console.log("Se ha ejecutado la función Calcular.");
 
     return precioTotal + (precioTotal * IVA);
 }
@@ -249,11 +237,11 @@ function precioPagBN(numPag, size) {
         return a4BN;
     } else if (size == "a3") {
         console.log(mensaje);
-        return a4BN * (RECARGO_A3_FACTOR * 100);
+        return a4BN * RECARGO_A3_FACTOR;
     }
     
     alert("Opción no contemplada.");
-    console.log("Opción no válidada en la función Precio Pag BN.");
+    console.error("Opción no válidada en la función Precio Pag BN.");
 }
 
 function precioPagC(numPag, size) {
@@ -265,11 +253,11 @@ function precioPagC(numPag, size) {
         return a4C;
     } else if (size == "a3") {
         console.log(mensaje);
-        return a4C * (RECARGO_A3_FACTOR * 100);
+        return a4C * RECARGO_A3_FACTOR;
     }
     
     alert("Opción no contemplada.");
-    console.log("Opción no válidada en la función Precio Pag C.");
+    console.error("Opción no válidada en la función Precio Pag C.");
 }
 
 function calcularDobleCara(precio) {
@@ -279,12 +267,12 @@ function calcularDobleCara(precio) {
 
 function calcularEncuadernar(unidades) {
     console.log("Se ha ejecutado la función Calcular Encuadernar.");
-    return unidades * (PRECIO_ENCUADERNACION * 100);
+    return unidades * PRECIO_ENCUADERNACION;
 }
 
 function calcularDescuento(precio) {
     console.log("Se ha ejecutado la función Calcular Descuento.");
-    if (precio >= UMBRAL1 && precio < UMBRAL2) {
+    if (precio >= (UMBRAL1 * 100) && precio < (UMBRAL2 * 100)) {
         return precio - (precio * DTO1);
     }
     return precio - (precio * DTO2);
@@ -295,17 +283,7 @@ function calcularUrgencia(precio) {
     return precio + (precio * RECARGO_URGENCIA);
 }
 
-/*
-Reglas de negocio a aplicar:
-1) Determinar el precio por página según tipo (BN/Color), tamaño (A4/A3) y si es doble cara.
-2) Obtener el coste total de las páginas y el de las encuadernaciones.
-3) Calcular el subtotal base del trabajo.
-4) Aplicar el descuento y recargo si corresponden.
-6) Calcular los impuestos y el importe final a pagar.
-
-Comprobación mínima:
+/* Comprobación mínima:
 - Probar al menos un caso sin descuento ni urgencia.
-- Probar al menos un caso con descuento y con urgencia, verificando que el orden indicado modifica el resultado.
-*/
-
+- Probar al menos un caso con descuento y con urgencia, verificando que el orden indicado modifica el resultado. */
 main();
