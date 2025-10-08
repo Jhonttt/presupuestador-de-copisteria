@@ -1,5 +1,5 @@
 "use strict"; 
-// 1 error?, no hace falta validar para encuadernar, pedir encuadernación ternario, mesaje encuadernar pones max
+// pedir encuadernación ternario, mesaje encuadernar pones max
 // 1️⃣ Constantes
 const IVA = 0.21;                  // 21%
 const PRECIO_BN_A4 = 0.05;         // €/pág B/N (A4)
@@ -74,10 +74,10 @@ function calcular(pagBN, pagC, size, dobleCara, numEncuader, urgencia, flag) {
 
 function calcular2(pagBN, pagC, sizeBN, sizeC, dobleCaraBN, dobleCaraC, numEncuaderBN, numEncuaderC, urgencia) {
     let precioBN = precioPagBN(pagBN, sizeBN);
-    let precioC = precioPagC(pagC, sizeC);
     if (dobleCaraBN) precioBN = calcularDobleCara(precioBN);
-    if (dobleCaraC) precioC = calcularDobleCara(precioC);
     if (numEncuaderBN != 0) precioBN += calcularEncuadernar(numEncuaderBN);
+    let precioC = precioPagC(pagC, sizeC);
+    if (dobleCaraC) precioC = calcularDobleCara(precioC);
     if (numEncuaderC != 0) precioC += calcularEncuadernar(numEncuaderC);
     let precioTotal = precioBN + precioC;
     if (precioTotal >= (UMBRAL1 * 100)) precioTotal = calcularDescuento(precioTotal);
@@ -91,13 +91,11 @@ function precioPagBN(numPag, size) {
     const mensaje = "Se ha ejecutado la función Precio Pág BN.";
     if (size == "A4") {
         console.log(mensaje);
-        mensajeConsola += `Paginas B/N: ${numPag} copias x ${PRECIO_BN_A4} € = ${(a4BN / 100).toFixed(2)} €\nTamaño: A4\n`;
-        console.log(`Paginas B/N: ${numPag} x ${PRECIO_BN_A4} = ${(a4BN / 100).toFixed(2)} €\nTamaño: A4\n`); // Usamos to fixed para limitar a 2 decimales
+        mensajeConsola += `Páginas B/N: ${numPag} copias x ${PRECIO_BN_A4} € = ${(a4BN / 100).toFixed(2)} €\nTamaño: A4\n`;
         return a4BN;
     } else if (size == "A3") {
         console.log(mensaje);
-        mensajeConsola += `Paginas B/N: ${numPag} copias x ${PRECIO_BN_A4} € x ${RECARGO_A3_FACTOR} = ${(a4BN / 100).toFixed(2)} €\nTamaño: A3 | ${(a4BN / 100).toFixed(2)} € x ${RECARGO_A3_FACTOR} € = ${((a4BN * RECARGO_A3_FACTOR) / 100).toFixed(2)} €\n`;
-        console.log(`Paginas B/N: ${numPag} x ${PRECIO_BN_A4} x ${RECARGO_A3_FACTOR} = ${((a4BN * RECARGO_A3_FACTOR) / 100).toFixed(2)} €\nTamaño: A3`);
+        mensajeConsola += `Páginas B/N: ${numPag} copias x ${PRECIO_BN_A4} € = ${(a4BN / 100).toFixed(2)} €\nTamaño: A3 | ${(((a4BN * RECARGO_A3_FACTOR) - a4BN) / 100).toFixed(2)} €\n`;
         return a4BN * RECARGO_A3_FACTOR;
     }
     alert("Opción no contemplada.");
@@ -109,11 +107,11 @@ function precioPagC(numPag, size) {
     const mensaje = "Se ha ejecutado la función Precio Pag C.";
     if (size == "A4") {
         console.log(mensaje);
-        console.log(`Páginas a color: ${numPag} x ${PRECIO_COLOR_A4} = ${(a4C / 100).toFixed(2)} €\nTamaño: A4`);
+        mensajeConsola += `Páginas Color: ${numPag} copias x ${PRECIO_COLOR_A4} € = ${(a4C / 100).toFixed(2)} €\nTamaño: A4\n`;
         return a4C;
     } else if (size == "A3") {
         console.log(mensaje);
-        console.log(`Páginas a Color: ${numPag} x ${PRECIO_COLOR_A4} x ${RECARGO_A3_FACTOR} = ${((a4C * RECARGO_A3_FACTOR) / 100).toFixed(2)} €\nTamaño: A3`);
+        mensajeConsola += `Páginas Color: ${numPag} copias x ${PRECIO_COLOR_A4} € = ${(a4C / 100).toFixed(2)} €\nTamaño: A3 | ${(((a4C * RECARGO_A3_FACTOR).toFixed(2) - a4C) / 100)} €\n`;
         return a4C * RECARGO_A3_FACTOR;
     }
     alert("Opción no contemplada.");
@@ -122,34 +120,29 @@ function precioPagC(numPag, size) {
 
 function calcularDobleCara(precio) {
     console.log("Se ha ejecutado la función Calcular Doble Cara.");
-    mensajeConsola += `Doble Cara: Si (10%) → ${(precio / 100).toFixed(2)} € x ${FACTOR_DOBLE_CARA} € = ${((precio * FACTOR_DOBLE_CARA) / 100).toFixed(2)} €\n`;
-    console.log(`Doble Cara: Si → ${(precio / 100).toFixed(2)} x ${FACTOR_DOBLE_CARA} = ${((precio * FACTOR_DOBLE_CARA) / 100).toFixed(2)} €`);
+    mensajeConsola += `Doble Cara: Si (${(1 - FACTOR_DOBLE_CARA).toFixed(2) * 100}%) → -${((precio - (precio * FACTOR_DOBLE_CARA)) / 100).toFixed(2)} €\n`;
     return precio * FACTOR_DOBLE_CARA;
 }
 
 function calcularEncuadernar(unidades) {
     console.log("Se ha ejecutado la función Calcular Encuadernar.");
-    mensajeConsola += `N° Encuadernaciones: ${unidades} x ${PRECIO_ENCUADERNACION} = ${((unidades * PRECIO_ENCUADERNACION)).toFixed(2)} €\n`;
-    console.log(`N° Encuadernaciones: ${unidades} x ${PRECIO_ENCUADERNACION} = ${((unidades * PRECIO_ENCUADERNACION)).toFixed(2)} €`);
+    mensajeConsola += `N° Encuadernaciones: ${unidades} unidades x ${PRECIO_ENCUADERNACION} € = ${((unidades * PRECIO_ENCUADERNACION)).toFixed(2)} €\n`;
     return unidades * (PRECIO_ENCUADERNACION * 100);
 }
 
 function calcularDescuento(precio) { // mal?
     console.log("Se ha ejecutado la función Calcular Descuento.");
     if (precio >= (UMBRAL1 * 100) && precio < (UMBRAL2 * 100)) {
-        mensajeConsola += `Descuento aplicado: ${precio / 100} - ${DTO1 * 100}% = ${((precio - (precio * DTO1)) / 100).toFixed(2)} €\n`;
-        console.log(`Descuento aplicado (${DTO1 * 100}%): ${((precio - (precio * DTO1)) / 100).toFixed(2)} €`);
+        mensajeConsola += `Descuento aplicado (${DTO1 * 100}%): -${((precio * DTO1) / 100).toFixed(2)} €\n`;
         return precio - (precio * DTO1);
     }
-    mensajeConsola += `Descuento aplicado: ${precio / 100} - ${DTO2 * 100}% ${((precio - (precio * DTO2)) / 100).toFixed(2)} €\n`;
-    console.log(`Descuento aplicado (${DTO2 * 100}%): ${((precio - (precio * DTO2)) / 100).toFixed(2)} €`);
+    mensajeConsola += `Descuento aplicado (${DTO2 * 100}%): -${((precio * DTO2) / 100).toFixed(2)} €\n`;
     return precio - (precio * DTO2);
 }
 
 function calcularUrgencia(precio) {
     console.log("Se ha ejecutado la función Calcular Urgencia.");
-    mensajeConsola += `Urgente: Si → ${(precio/100).toFixed(2)} + ${RECARGO_URGENCIA * 100}% = ${((precio * (1 + RECARGO_URGENCIA)) / 100).toFixed(2)} €\n`;
-    console.log(`Urgente: Si → ${(precio/100).toFixed(2)} + ${RECARGO_URGENCIA * 100}% = ${((precio * (1 + RECARGO_URGENCIA)) / 100).toFixed(2)} €`);
+    mensajeConsola += `Urgente: Si (${RECARGO_URGENCIA * 100}%) → ${((precio * RECARGO_URGENCIA) / 100).toFixed(2)} €\n`;
     return precio + (precio * RECARGO_URGENCIA);
 }
 
@@ -190,15 +183,11 @@ function pedirSize(tipo) { // Función para pedir el tipo de tamaño de copia
     return size.toUpperCase().trim();
 }
 
-function pedirDobleCara(tipo, pag) { // Función para que el usuario indique si quiere las copias a doble cara
+function pedirDobleCara(tipo) { // Función para que el usuario indique si quiere las copias a doble cara
     let dobleCara;
-    if (pag < 2) {
-        alert(`Debe de haber mínimo 2 copias para hacerlas doble cara${tipo}.`);
-    } else {
-        do dobleCara = prompt(`¿Quieres de doble cara${tipo}?:`); while (validarRespuesta(dobleCara) == null);
-        console.log("Se ha ejecutado la función Pedir Doble Cara.");
-        return dobleCara = validarRespuesta(dobleCara);
-    }
+    do dobleCara = prompt(`¿Quieres de doble cara${tipo}?:`); while (validarRespuesta(dobleCara) == null);
+    console.log("Se ha ejecutado la función Pedir Doble Cara.");
+    return dobleCara = validarRespuesta(dobleCara);
 }
 
 function pedirEncuadernacion(tipo, dobleCara, numPaginas) { // Función para pedir la cantidad de encuadernaciones
@@ -218,6 +207,7 @@ function pedirEncuadernacion(tipo, dobleCara, numPaginas) { // Función para ped
     do {
         // Mostramos el máximo permitido
         numEncuader = prompt(`Introduce el número de encuadernaciones${tipo} que deseas (máx ${numMaxEncuader}):`);
+        if (Number(numEncuader) > numMaxEncuader) alert(`El máximo es de ${numMaxEncuader}`);
     } while (!validarNumeros(numEncuader) || Number(numEncuader) > numMaxEncuader);
     console.log(`Validación correcta: ${numEncuader} encuadernaciones${tipo} (máx: ${numMaxEncuader})`);
     return Number(numEncuader);
@@ -280,13 +270,17 @@ function menu() {
         detalles = imprimirDatos(pagBN, pagC, size, dobleCara, numEncuader, urgencia);
     }
 
-    if (total < MIN_FACTURABLE)
-        alert(`El total de su pedido de ${(total/100).toFixed(2)} € es menor al mínimo facturable de ${MIN_FACTURABLE} €, por tanto no se aplicará.`);
-    else
-      // Como el total ya tiene el iva, hacemos una regla de tres para mostrar el iva.
-        console.log(`${mensajeConsola}IVA: ${IVA * 100}% = ${((total * 0.21) / 1.21 / 100).toFixed(2)} €\nPrecio total: ${(total / 100).toFixed(2)} €`);
+    if (total < MIN_FACTURABLE) {
+        alert(`El total de su pedido de ${(total/100).toFixed(2)} € es menor al mínimo facturable de ${MIN_FACTURABLE / 100} €, por tanto no se aplicará.`);
+        console.log(`${mensajeConsola}IVA: ${IVA * 100}% = ${((total * 0.21) / 1.21 / 100).toFixed(2)} €\nPrecio total: ${(total / 100).toFixed(2)} €\nNo se puede hacer el pedido porque no cumples el mínimo facturable de ${MIN_FACTURABLE / 100} €`);
+        document.getElementById("datos").innerText = detalles + `\nNo se puede hacer el pedido porque no cumples el mínimo facturable de ${MIN_FACTURABLE / 100} €`;
+        document.getElementById("total").innerText = `TOTAL: ${(total/100).toFixed(2)} €`;
+    } else {
+        // Como el total ya tiene el iva, hacemos una regla de tres para mostrar el iva.
+        console.log(`${mensajeConsola}IVA: ${IVA * 100}% = ${(((total * 0.21) / 1.21 ) / 100).toFixed(2)} €\nPrecio total: ${(total / 100).toFixed(2)} €`);
         document.getElementById("datos").innerText = detalles;
         document.getElementById("total").innerText = `TOTAL: ${(total/100).toFixed(2)} €`;
+    }      
 }
 
 // 7️⃣ Función principal
